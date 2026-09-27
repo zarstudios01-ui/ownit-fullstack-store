@@ -1,0 +1,82 @@
+# OwnIt — Premium Custom PS5 Skins
+
+Live Store [https://ownit-ecom.vercel.app](https://ownit-ecom.vercel.app)  
+**Admin Dashboard:** [https://ownit-ecom.vercel.app/admin](https://ownit-ecom.vercel.app/admin)
+
+A full-stack e-commerce platform for premium custom PS5 skins.  
+Features a polished storefront, real order processing, MySQL-backed data layer, and a role-based admin dashboard.
+
+---
+
+# Features
+
+ # Storefront
+- Modern, responsive product catalog
+- Quick-add to cart & checkout flow
+- Order creation with customer details and shipping
+- AI chat assistant (powered by Groq)
+- “Create Your Own” design tool (in development)
+
+### Admin Dashboard (Role-Based)
+| Role     | Access Level                          | Capabilities                                      |
+|----------|---------------------------------------|---------------------------------------------------|
+| Admin   | Full                                  | Add / edit / delete products, manage orders & customers, update status |
+| Viewer  | Read-only                             | View live dashboard, stats, recent orders (customer data masked) |
+
+The Viewer key is intentionally public so recruiters and visitors can:
+1. Log into the admin panel
+2. Place a test order on the live storefront
+3. Watch the dashboard update in real time
+
+---
+
+## Tech Stack
+
+Frontend
+- Vanilla HTML, CSS, JavaScript
+- Responsive design
+
+Backend
+- Vercel Serverless Functions
+- TiDB (MySQL-compatible) with connection pooling & transactions
+- Role-based authentication via custom admin/viewer keys
+
+Other
+- Vercel Blob (image storage)
+- Groq API (AI assistant)
+- Order notification system
+
+---
+
+## Role-Based Access (How it works)
+
+Two environment variables control access:
+
+- `ADMIN_KEY` → Full write access
+- `VIEWER_KEY` → Read-only access
+
+Backend enforcement (`api/_auth.js`):
+- `requireAnyRole` → allows both Admin & Viewer
+- `requireAdmin` → blocks Viewer from any mutating action
+
+Frontend automatically hides all edit / delete / add buttons when the user is a Viewer.
+
+Customer data is also masked for Viewer role (privacy-aware).
+
+---
+
+## Live Demo for Recruiters
+
+Want to see the system work end-to-end?
+
+1. Open the [Admin Dashboard](https://ownit-ecom.vercel.app/admin)
+2. Enter the viewer key (see below or contact me)
+3. Keep the dashboard open
+4. Go to the [storefront](https://ownit-ecom.vercel.app), add a product to cart, and place a test order
+5. Watch the dashboard stats and recent orders update in real time
+
+> Viewer Key: (11461a3609f3c36578d53ebe09d95081) `viewer-demo-2026`  
+> (This key only has read access. No data can be modified.)
+
+---
+
