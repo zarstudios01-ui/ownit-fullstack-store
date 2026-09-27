@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
   const relatedSlugs = (typeof p.related_slugs === 'string' ? JSON.parse(p.related_slugs) : p.related_slugs) || [];
 
   const cardImage = images[0] || '/images/placeholder.jpg';
-  const galleryImages = images.slice(1).filter(f => !/accessory/i.test(f));
+  const galleryImages = images.filter(f => !/accessory/i.test(f));
   const mainImage = galleryImages[0] || cardImage;
   const controllerImage = galleryImages.find(f => /controller/i.test(f)) || galleryImages[galleryImages.length - 1] || mainImage;
 
