@@ -2,9 +2,13 @@
   "functions": {
     "api/chat.js": {
       "includeFiles": "data/**"
+    },
+    "api/homepage.js": {
+      "includeFiles": "home-template.html"
     }
   },
   "rewrites": [
+    { "source": "/", "destination": "/api/homepage" },
     { "source": "/:slug/", "destination": "/api/product-page?slug=:slug" }
   ]
 }
