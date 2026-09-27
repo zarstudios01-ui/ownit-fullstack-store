@@ -3,7 +3,7 @@ const path = require('path');
 const { getPool, cors } = require('./_db');
 
 module.exports = async (req, res) => {
-  if (cors(req, res)) return;
+  cors(res);
 
   try {
     const pool = getPool();
