@@ -1,60 +1,53 @@
 // /api/chat.js — Vercel serverless function.
 // Keeps GROQ_API_KEY server-side. Never call Groq directly from the browser.
 
-const fs = require('fs');
-const path = require('path');
+const { getPool } = require('./_db');
 
-// Read pricing from data/products.json at request time. Wrapped defensively —
-// if the file is ever missing or the bundler doesn't include it, the assistant
-// falls back to this hardcoded snapshot instead of crashing outright.
-function loadPricing() {
+// Fallback used only if the DB query fails outright — keeps the assistant
+// answering with something reasonable instead of crashing.
+const FALLBACK_PRODUCTS = [
+  { name: 'Ragnarok', description: 'Weathered warrior engraving with rune border.', badge: null, variants: [{ name: 'Console Only', price: 1500 }, { name: 'Console + Controller', price: 2000 }] },
+  { name: 'Weapon X', description: 'Claw-slash design over wire mesh texture.', badge: 'Limited Series', variants: [{ name: 'Console Only', price: 1500 }, { name: 'Console + Controller', price: 2000 }] },
+  { name: 'Sticker Bomb', description: 'Colorful maximalist graffiti collage.', badge: 'Best Seller', variants: [{ name: 'Console Only', price: 1400 }, { name: 'Console + Controller', price: 1900 }] },
+  { name: 'Ajrak', description: 'Sindhi block-print heritage design.', badge: 'Best Seller', variants: [{ name: 'Console Only', price: 1500 }, { name: 'Console + Controller', price: 2000 }] },
+  { name: 'Webslinger', description: 'Red spider web pattern with white emblem.', badge: 'Best Seller', variants: [{ name: 'Console Only', price: 1500 }, { name: 'Console + Controller', price: 2000 }] },
+  { name: 'Scuderia', description: 'Brushed-titanium finish with engraved racetrack.', badge: 'Limited Edition', variants: [{ name: 'Console Only', price: 2200 }, { name: 'Console + Controller', price: 2700 }] }
+];
+
+async function loadProducts() {
   try {
-    const raw = fs.readFileSync(path.join(process.cwd(), 'data', 'products.json'), 'utf8');
-    return JSON.parse(raw);
+    const pool = getPool();
+    const [rows] = await pool.query('SELECT name, description, badge, variants FROM products');
+    return rows.map((r) => ({
+      name: r.name,
+      description: r.description || '',
+      badge: r.badge || null,
+      variants: typeof r.variants === 'string' ? JSON.parse(r.variants) : r.variants || []
+    }));
   } catch (err) {
-    console.error('Failed to load data/products.json, using fallback pricing', err);
-    return {
-      currency: 'PKR',
-      controllerAddOnPrice: 500,
-      products: {
-        weaponx: { name: 'Weapon X', consoleOnly: 1500, consoleAndController: 2000, controllerOnly: 500, headset: 2100 },
-        ragnarok: { name: 'Ragnarok', consoleOnly: 1500, consoleAndController: 2000, controllerOnly: 500 },
-        stickerbomb: { name: 'Sticker Bomb', consoleOnly: 1400, consoleAndController: 1900, controllerOnly: 500 },
-        ajrak: { name: 'Ajrak', consoleOnly: 1500, consoleAndController: 2000, controllerOnly: 500 },
-        webslinger: { name: 'Webslinger', consoleOnly: 1500, consoleAndController: 2000, controllerOnly: 500 },
-        scuderia: { name: 'Scuderia', isLimitedEdition: true, consoleOnly: 2200, consoleAndController: 2700, controllerOnly: 500 }
-      },
-      shipping: { standard: 'Free, 2-6 business days', express: 500 },
-      returnPolicy: '30-day returns on premade skins in original condition; custom/uploaded designs are final sale unless damaged or misprinted.'
-    };
+    console.error('Failed to load products from DB, using fallback list', err);
+    return FALLBACK_PRODUCTS;
   }
 }
 
-const pricing = loadPricing();
-
-// NOTE: Groq's model catalog changes. This was set to the Llama models requested,
-// but some recent Groq docs show llama-3.3-70b-versatile / llama-3.1-8b-instant as
-// deprecated in favor of openai/gpt-oss-20b / openai/gpt-oss-120b. Check
-// https://console.groq.com/docs/models before deploying — if Llama is retired,
-// change this one line.
-// Groq retired llama-3.3-70b-versatile and llama-3.1-8b-instant on August 16, 2026.
-// openai/gpt-oss-120b is their recommended replacement for the 70B-class model.
-// Check https://console.groq.com/docs/models if this ever needs to change again.
 const MODEL = 'openai/gpt-oss-120b';
 
-// Builds the pricing section of the prompt fresh from data/products.json on every
-// request — edit that file when prices change, nothing here needs to change too.
-function buildPricingBlock() {
-  const lines = Object.values(pricing.products).map((p) => {
-    let line = `- ${p.name}${p.isLimitedEdition ? ' (Limited Edition — small batch)' : ''}: Console Only Rs. ${p.consoleOnly.toLocaleString('en-PK')} · Console + Controller Rs. ${p.consoleAndController.toLocaleString('en-PK')}`;
-    if (p.headset) line += ` · matching headset also available for Rs. ${p.headset.toLocaleString('en-PK')}`;
-    return line;
-  });
-  lines.push(`- Controller skin bought separately (add-on): Rs. ${pricing.controllerAddOnPrice.toLocaleString('en-PK')} (same total as choosing "Console + Controller" on that product)`);
-  return lines.join('\n');
+function buildStoreInfoBlock(products) {
+  return products
+    .map((p) => `${p.name}${p.badge ? ` (${p.badge})` : ''} — ${p.description}`)
+    .join('\n');
 }
 
-function buildSystemPrompt() {
+function buildPricingBlock(products) {
+  return products
+    .map((p) => {
+      const variantStr = p.variants.map((v) => `${v.name} Rs. ${Number(v.price).toLocaleString('en-PK')}`).join(' · ');
+      return `- ${p.name}${p.badge === 'Limited Edition' ? ' (Limited Edition — small batch)' : ''}: ${variantStr}`;
+    })
+    .join('\n');
+}
+
+function buildSystemPrompt(products) {
   return `Tum OwnIt ke AI shopping assistant ho — ek Pakistani custom PS5 skins store ka helper.
 
 LANGUAGE RULE (bohot zaroori — hamesha follow karna):
@@ -64,15 +57,16 @@ LANGUAGE RULE (bohot zaroori — hamesha follow karna):
 - Agar pehla message hi ho ya language clear na ho, to default Roman Urdu/Hinglish use karo (yeh store mostly Pakistan mein hi chalta hai).
 - Kabhi bhi Urdu script (اردو) mein mat likhna — sirf Roman/Latin letters, chahe tone Urdu ho ya English.
 
-STORE INFO (yehi facts use karna, kuch bhi mat banana):
-- Products: Ragnarok (weathered warrior/rune design), Weapon X (claw-slash/wire-mesh design, controller aur headset bhi available), Hokage (ninja ink-sketch design), Webslinger (spider emblem design), Sticker Bomb (colorful graffiti collage design), Ajrak (Sindhi block-print heritage design), Scuderia (Limited Edition — brushed titanium finish with engraved racetrack and racing badge, small-batch run, jab batch khatam ho jaye to dobara available nahi hota)
+STORE INFO (yehi facts use karna, kuch bhi mat banana — yeh list live store se aati hai):
+${buildStoreInfoBlock(products)}
 
-CURRENT PRICING (PKR — yeh hamesha up-to-date hai, exact numbers yehi use karna):
-${buildPricingBlock()}
+CURRENT PRICING (PKR — yeh live database se aata hai, exact numbers yehi use karna):
+${buildPricingBlock(products)}
+- Controller skin bought separately (add-on): Rs. 500 (same total as choosing "Console + Controller" on that product)
 
 - Sab PS5 Disc, PS5 Digital aur PS5 Slim ke liye available hain — customer ko apna model batana hota hai order karte waqt
-- Shipping: ${pricing.shipping.standard.toLowerCase()}, express Rs. ${pricing.shipping.express.toLocaleString('en-PK')}
-- Returns: ${pricing.returnPolicy}
+- Shipping: free, 2-6 business days, express Rs. 500
+- Returns: 30-day returns on premade skins in original condition; custom/uploaded designs are final sale unless damaged or misprinted.
 - Apna khud ka design bhi upload kar sakte hain "Create Your Own" page se
 - Yeh site abhi ek portfolio/demo project hai — checkout se koi real payment process nahi hota
 
@@ -109,12 +103,13 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Keep only the last few turns to control token usage / latency.
   const trimmed = messages.slice(-12).filter(
     (m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'
   );
 
   try {
+    const products = await loadProducts();
+
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -123,7 +118,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: MODEL,
-        messages: [{ role: 'system', content: buildSystemPrompt() }, ...trimmed],
+        messages: [{ role: 'system', content: buildSystemPrompt(products) }, ...trimmed],
         temperature: 0.7,
         max_tokens: 400,
       }),

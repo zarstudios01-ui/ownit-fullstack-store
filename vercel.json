@@ -1,8 +1,5 @@
 {
   "functions": {
-    "api/chat.js": {
-      "includeFiles": "data/**"
-    },
     "api/homepage.js": {
       "includeFiles": "home-template.html"
     }
