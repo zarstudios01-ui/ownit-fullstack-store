@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OwnIt — Products</title>
+    <title>OwnIt — Reviews</title>
     <meta name="robots" content="noindex">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,65 +11,51 @@
 
 <div class="sidebar">
     <div class="brand">OWNIT<span>.</span></div>
-
     <nav>
         <a href="index.html">Dashboard</a>
         <a href="orders.html">Orders</a>
         <a href="customers.html">Customers</a>
-        <a href="products.html" class="active">Products</a>
-        <a href="reviews.html">Reviews</a>
+        <a href="products.html">Products</a>
+        <a href="reviews.html" class="active">Reviews</a>
     </nav>
 </div>
 
 <main class="main">
-
     <header class="topbar">
         <div>
             <p class="eyebrow">COMMERCE</p>
-            <h1>Products</h1>
+            <h1>Reviews</h1>
         </div>
-
-        <div class="status">
-            <span></span> Backend connected
-        </div>
+        <div class="status"><span></span> Backend connected</div>
     </header>
 
     <section class="panel">
-
         <div class="panel-header">
-            <p class="eyebrow">PRODUCT MANAGEMENT</p>
-            <h2>All Products</h2>
-            <button id="addProductBtn">Add Product</button>
+            <p class="eyebrow">MODERATION</p>
+            <h2>All Reviews</h2>
         </div>
-
         <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Slug</th>
-                        <th>SKU</th>
-                        <th>Badge</th>
-                        <th>Category</th>
+                        <th>Product</th>
+                        <th>Author</th>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Status</th>
+                        <th>Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-
-                <tbody id="productsTable">
-                    <tr>
-                        <td colspan="6">Loading products...</td>
-                    </tr>
+                <tbody id="reviewsTable">
+                    <tr><td colspan="7">Loading reviews...</td></tr>
                 </tbody>
             </table>
         </div>
-
     </section>
-
-    <section id="productForm" class="panel hidden"></section>
-
 </main>
 
 <script src="auth.js"></script>
-<script src="products.js"></script>
+<script src="reviews.js"></script>
 </body>
 </html>

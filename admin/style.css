@@ -456,3 +456,6 @@ td {
     font-size: 13px;
     color: #999;
 }
+
+.btn-sm { background:#111; color:#fff; border:0; padding:6px 10px; margin:2px; font-size:12px; cursor:pointer; border-radius:4px; }
+.btn-sm:hover { background:#333; }
