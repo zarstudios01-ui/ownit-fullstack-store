@@ -67,7 +67,7 @@ module.exports = async function handler(req, res) {
 
   // Reviews + rating summary
   const [reviewRows] = await pool.query(
-    'SELECT author, rating, body, variant_label, verified, created_at FROM product_reviews WHERE product_slug = ? AND status = 'approved' ORDER BY created_at DESC',
+    `SELECT author, rating, body, variant_label, verified, created_at FROM product_reviews WHERE product_slug = ? AND status = 'approved' ORDER BY created_at DESC`,
     [slug]
   );
   const totalReviews = reviewRows.length;
