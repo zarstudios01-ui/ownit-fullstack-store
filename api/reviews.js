@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { getPool, cors } = require('./_db');
-const { requireAdmin } = require('./_auth');
+const { requireAdmin, requireAnyRole } = require('./_auth');
 
 module.exports = async (req, res) => {
   cors(res);
@@ -43,7 +43,9 @@ module.exports = async (req, res) => {
         [b.slug, author, rating, body, String(b.variant_label || '').slice(0, 60) || null, ip_hash]);
       return res.json({ success: true });
     }
-    if (!requireAdmin(req, res)) return;
+    if (req.method === 'GET') {
+      if (!requireAnyRole(req, res)) return;
+    } else if (!requireAdmin(req, res)) return;
     if (req.method === 'GET') {
       const [rows] = await pool.query(
         'SELECT id, product_slug, author, rating, body, status, created_at FROM product_reviews ORDER BY created_at DESC LIMIT 200');

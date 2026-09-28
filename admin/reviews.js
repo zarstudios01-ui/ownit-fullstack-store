@@ -60,7 +60,7 @@ document.getElementById('reviewsTable').addEventListener('click', async (e) => {
                 body: JSON.stringify({ status: action })
             });
         }
-        if (!res.ok) throw new Error('Action failed (' + res.status + ')');
+        if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || 'Action failed (' + res.status + ')'); }
         loadReviews();
     } catch (err) {
         alert('Could not update review: ' + err.message);
