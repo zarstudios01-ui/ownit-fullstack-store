@@ -160,7 +160,7 @@ loadOrders().then(applyRoleUI);
 async function setStatus(id, status, btn) {
     btn.disabled = true;
     try {
-        const r = await adminFetch('/api/update-order-status', {
+        const r = await adminFetch('/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ order_id: id, status })
