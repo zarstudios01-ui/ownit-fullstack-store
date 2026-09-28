@@ -104,3 +104,54 @@ const observer = new IntersectionObserver(entries => {
 observer.observe(addBtnRef);
 
 refreshPrice();
+
+(function () {
+  var slug = document.body.getAttribute('data-product-slug');
+  var form = document.getElementById('reviewForm');
+  if (!slug || !form) return;
+  var rating = 0, msg = document.getElementById('reviewMsg');
+  var btns = document.querySelectorAll('#starInput button');
+  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
+  function stars(n){var f=Math.round(n);return '★★★★★☆☆☆☆☆'.slice(5-f,10-f);}
+  function paint(){btns.forEach(function(b){b.classList.toggle('on',+b.dataset.v<=rating);});}
+  btns.forEach(function(b){b.addEventListener('click',function(){rating=+b.dataset.v;paint();});});
+  function render(data){
+    var s=data.summary,c=+s.c,avg=c?Number(s.avg):0;
+    var list=document.querySelector('.review-list');
+    if(list) list.innerHTML=c?data.reviews.map(function(r){
+      return '<div class="review-item"><div class="stars">'+stars(r.rating)+'</div><p>"'+esc(r.body)+'"</p><div class="ra">'+(r.verified?'<span class="verified">✓ Verified Buyer</span>':'')+'<span>'+esc(r.author)+(r.variant_label?' · '+esc(r.variant_label):'')+'</span></div></div>';
+    }).join(''):'<p>No reviews yet — be the first.</p>';
+    var big=document.querySelector('.rating-summary .big');if(big)big.textContent=c?avg.toFixed(1):'—';
+    var sb=document.querySelector('.rating-summary .stars-big');if(sb)sb.textContent=c?stars(avg):'☆☆☆☆☆';
+    var cnt=document.querySelector('.rating-summary .count');if(cnt)cnt.textContent='Based on '+c+' review'+(c===1?'':'s');
+    var rows=document.querySelectorAll('.rating-summary .bar-row');
+    [5,4,3,2,1].forEach(function(n,i){
+      var row=rows[i];if(!row)return;
+      var pct=c?Math.round((+s['s'+n]/c)*100):0;
+      row.querySelector('.bar-fill').style.width=pct+'%';
+      row.lastElementChild.textContent=pct+'%';
+    });
+    var rr=document.querySelector('.rating-row');
+    if(rr)rr.innerHTML=c?'<span class="stars">'+stars(avg)+'</span> <a href="#reviews">'+avg.toFixed(1)+' · '+c+' reviews</a>':'<span class="stars">☆☆☆☆☆</span> <a href="#reviews">No reviews yet</a>';
+  }
+  function load(){
+    fetch('/api/reviews?slug='+encodeURIComponent(slug)).then(function(r){return r.json();}).then(render).catch(function(){});
+  }
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(!rating){msg.textContent='Please choose a star rating.';return;}
+    var fd=new FormData(form),btn=form.querySelector('button[type=submit]');
+    btn.disabled=true;msg.textContent='Sending…';
+    fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:slug,rating:rating,author:fd.get('author'),body:fd.get('body'),website:fd.get('website')})})
+    .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(x){
+      if(x.ok&&x.j.success){
+        msg.textContent='Thanks! Your review is live.';form.reset();rating=0;paint();load();
+        setTimeout(function(){document.getElementById('reviewFormWrap').open=false;},1500);
+      } else msg.textContent=x.j.error||'Something went wrong.';
+    })
+    .catch(function(){msg.textContent='Network error. Try again.';})
+    .then(function(){btn.disabled=false;});
+  });
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)load();});
+})();

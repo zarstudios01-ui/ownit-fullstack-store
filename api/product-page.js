@@ -67,7 +67,7 @@ module.exports = async function handler(req, res) {
 
   // Reviews + rating summary
   const [reviewRows] = await pool.query(
-    'SELECT author, rating, body, variant_label, created_at FROM product_reviews WHERE product_slug = ? ORDER BY created_at DESC',
+    'SELECT author, rating, body, variant_label, verified, created_at FROM product_reviews WHERE product_slug = ? AND status = 'approved' ORDER BY created_at DESC',
     [slug]
   );
   const totalReviews = reviewRows.length;
@@ -134,7 +134,7 @@ module.exports = async function handler(req, res) {
           <div class="review-item">
             <div class="stars">${stars(r.rating)}</div>
             <p>"${esc(r.body)}"</p>
-            <div class="ra"><span class="verified">✓ Verified Buyer</span><span>${esc(r.author)}${r.variant_label ? ' · ' + esc(r.variant_label) : ''}</span></div>
+            <div class="ra">${r.verified ? '<span class="verified">✓ Verified Buyer</span>' : ''}<span>${esc(r.author)}${r.variant_label ? ' · ' + esc(r.variant_label) : ''}</span></div>
           </div>`
     )
     .join('');
@@ -397,6 +397,23 @@ module.exports = async function handler(req, res) {
         <span class="eyebrow">Customer reviews</span>
         <h2>What Players Say</h2>
       </div>
+      <details class="review-form-wrap" id="reviewFormWrap">
+        <summary>Write a review</summary>
+        <form id="reviewForm" novalidate>
+          <div class="star-input" id="starInput" role="radiogroup" aria-label="Your rating">
+            <button type="button" data-v="1" aria-label="1 star">★</button>
+            <button type="button" data-v="2" aria-label="2 stars">★</button>
+            <button type="button" data-v="3" aria-label="3 stars">★</button>
+            <button type="button" data-v="4" aria-label="4 stars">★</button>
+            <button type="button" data-v="5" aria-label="5 stars">★</button>
+          </div>
+          <input type="text" name="author" placeholder="Your name" maxlength="40" required>
+          <textarea name="body" placeholder="Share your experience" maxlength="600" required></textarea>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+          <button type="submit" class="review-submit">Submit review</button>
+          <p class="form-msg" id="reviewMsg"></p>
+        </form>
+      </details>
       <div class="reviews-layout">
         <div class="rating-summary">
           <div class="big">${totalReviews ? avgRating.toFixed(1) : '—'}</div>

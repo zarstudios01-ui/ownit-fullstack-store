@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
   try {
     if (req.method === 'GET' && !q.all) {
       const [rows] = await pool.query(
-        `SELECT id, author, rating, body, variant_label, created_at
+        `SELECT id, author, rating, body, variant_label, verified, created_at
          FROM product_reviews WHERE product_slug=? AND status='approved'
          ORDER BY created_at DESC LIMIT 50`, [q.slug]);
       const [[agg]] = await pool.query(
