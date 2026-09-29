@@ -4,10 +4,10 @@
   var CFG = [
     { key: 'left', name: 'Left', kind: 'console', W: 1024, H: 1536,
       cut: '/images/templates/left-cut.png', photo: '/images/photos/console-left.jpg',
-      quad: [[236,236],[748,82],[772,1355],[181,1338]] },
+      quad: [[236,236],[748,82],[768,1385],[181,1338]], bulge: 30 },
     { key: 'right', name: 'Right', kind: 'console', W: 1024, H: 1536,
       cut: '/images/templates/right-cut.png', photo: '/images/photos/console-right.jpg',
-      quad: [[290,90],[810,208],[856,1330],[264,1380]] },
+      quad: [[290,90],[810,208],[856,1330],[264,1380]], bulge: 20 },
     { key: 'controller', name: 'Controller', kind: 'controller', W: 1536, H: 1024,
       photo: '/images/photos/controller.jpg', mirror: 1530, pad: [[534,150],[552,126],[984,126],[1002,150],[982,316],[940,348],[596,348],[554,316]],
       poly: [[352,182],[498,152],[530,156],[546,338],[505,432],[470,505],[430,572],[380,652],[336,732],[292,835],[262,888],[222,884],[182,842],[172,760],[184,600],[232,402],[300,250]] }
@@ -102,7 +102,7 @@
 
   // ---------- perspective-ish warp (grid of affine triangles) ----------
   function lerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; }
-  function bil(q, u, v) { return lerp(lerp(q[0], q[1], u), lerp(q[3], q[2], u), v); }
+  function bil(q, u, v, g) { var r = lerp(lerp(q[0], q[1], u), lerp(q[3], q[2], u), v); if (g) r[1] += g * 4 * u * (1 - u) * v * v; return r; }
   function tri(dc, img, s0, s1, s2, d0, d1, d2) {
     var u1 = s1[0] - s0[0], v1 = s1[1] - s0[1], u2 = s2[0] - s0[0], v2 = s2[1] - s0[1];
     var det = u1 * v2 - u2 * v1;
@@ -127,12 +127,12 @@
     if (bx1 > bx0 && by1 > by0) dc.drawImage(img, bx0, by0, bx1 - bx0, by1 - by0, bx0, by0, bx1 - bx0, by1 - by0);
     dc.restore();
   }
-  function warp(dc, src, sq, dq) {
+  function warp(dc, src, sq, dq, dg) {
     var N = 12, M = 18;
     for (var j = 0; j < M; j++) for (var i = 0; i < N; i++) {
       var u0 = i / N, u1 = (i + 1) / N, v0 = j / M, v1 = (j + 1) / M;
       var s00 = bil(sq, u0, v0), s10 = bil(sq, u1, v0), s01 = bil(sq, u0, v1), s11 = bil(sq, u1, v1);
-      var d00 = bil(dq, u0, v0), d10 = bil(dq, u1, v0), d01 = bil(dq, u0, v1), d11 = bil(dq, u1, v1);
+      var d00 = bil(dq, u0, v0, dg), d10 = bil(dq, u1, v0, dg), d01 = bil(dq, u0, v1, dg), d11 = bil(dq, u1, v1, dg);
       tri(dc, src, s00, s10, s01, d00, d10, d01);
       tri(dc, src, s10, s11, s01, d10, d11, d01);
     }
@@ -187,7 +187,7 @@
         if (p.kind === 'console') {
           tctx.setTransform(1, 0, 0, 1, 0, 0);
           tctx.clearRect(0, 0, tmp.width, tmp.height);
-          warp(tctx, p.art, p.corners, p.quad);
+          warp(tctx, p.art, p.corners, p.quad, p.bulge);
           ctx.globalCompositeOperation = 'multiply';
           ctx.drawImage(tmp, 0, 0);
         } else {
@@ -326,10 +326,10 @@
 
   // ---------- gestures ----------
   var ptrs = new Map(), prev = null;
-  function invBil(q, x, y) {
+  function invBil(q, x, y, g) {
     var u = .5, v = .5;
     for (var k = 0; k < 10; k++) {
-      var f = bil(q, u, v), ex = f[0] - x, ey = f[1] - y;
+      var f = bil(q, u, v, g), ex = f[0] - x, ey = f[1] - y;
       var a = (1 - v) * (q[1][0] - q[0][0]) + v * (q[2][0] - q[3][0]);
       var b = (1 - u) * (q[3][0] - q[0][0]) + u * (q[2][0] - q[1][0]);
       var c = (1 - v) * (q[1][1] - q[0][1]) + v * (q[2][1] - q[3][1]);
@@ -344,7 +344,7 @@
   function ptA(e) {
     var m = pt(e), p = P[cur];
     if (p.kind === 'console' && view === 'photo') {
-      var uv = invBil(p.quad, m.x, m.y), s = bil(p.corners, uv[0], uv[1]);
+      var uv = invBil(p.quad, m.x, m.y, p.bulge), s = bil(p.corners, uv[0], uv[1]);
       return { x: s[0], y: s[1] };
     }
     return m;
