@@ -9,7 +9,7 @@
       cut: '/images/templates/right-cut.png', photo: '/images/photos/console-right.jpg',
       quad: [[290,90],[810,208],[856,1330],[264,1380]] },
     { key: 'controller', name: 'Controller', kind: 'controller', W: 1536, H: 1024,
-      photo: '/images/photos/controller.jpg', mirror: 1530,
+      photo: '/images/photos/controller.jpg', mirror: 1530, pad: [[534,150],[552,126],[984,126],[1002,150],[982,316],[940,348],[596,348],[554,316]],
       poly: [[352,182],[498,152],[530,156],[546,338],[505,432],[470,505],[430,572],[380,652],[336,732],[292,835],[262,888],[222,884],[182,842],[172,760],[184,600],[232,402],[300,250]] }
   ];
   if (CAL) {
@@ -17,7 +17,7 @@
       var sv = JSON.parse(localStorage.getItem('cyoCal') || 'null');
       if (sv) CFG.forEach(function (c) {
         var k = c.kind === 'console' ? 'quad' : 'poly';
-        if (sv[c.key]) c[k] = sv[c.key];
+        if (sv[c.key]) { if (c.pad) { var n = c.poly.length; if (sv[c.key].length === n + c.pad.length) { c.pad = sv[c.key].slice(n); c.poly = sv[c.key].slice(0, n); } } else c[k] = sv[c.key]; }
       });
     } catch (e) {}
   }
@@ -36,7 +36,7 @@
   function warn(m) { warnEl.textContent = m || ''; }
   function normDeg(r) { return ((r * 180 / Math.PI + 180) % 360 + 360) % 360 - 180; }
   function mk(w, h) { var c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
-  function handles(p) { return p.kind === 'console' ? p.quad : p.poly; }
+  function handles(p) { return p.kind === 'console' ? p.quad : (p.pad ? p.poly.concat(p.pad) : p.poly); }
   function editable() { return true; }
   function needsPhoto(p) { return p.kind === 'controller' || view === 'photo'; }
 
@@ -82,7 +82,7 @@
     var mir = p.poly.map(function (q) { return [p.mirror - q[0], q[1]]; });
     var x0 = p.W, y0 = p.H, x1 = 0, y1 = 0;
     x.fillStyle = '#000';
-    [p.poly, mir].forEach(function (pts) {
+    [p.poly, mir].concat(p.pad ? [p.pad] : []).forEach(function (pts) {
       x.beginPath();
       pts.forEach(function (q, i) {
         if (i) x.lineTo(q[0], q[1]); else x.moveTo(q[0], q[1]);
