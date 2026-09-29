@@ -103,3 +103,31 @@ h1,h2,h3{font-family:var(--display);letter-spacing:.01em;line-height:.92;text-tr
 .footer-bottom p{font-size:12px;color:var(--graphite);}
 @media(max-width:900px){.footer-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:520px){.footer-grid{grid-template-columns:1fr;}}
+
+/* Create Your Own: editor */
+.cyo{padding:28px 24px 72px;}
+.cyo-head h1{font-size:clamp(44px,8vw,84px);margin:12px 0 10px;}
+.cyo-head .accent{color:var(--blood);}
+.cyo-lead{color:var(--ink-soft);max-width:520px;font-size:15px;}
+.cyo-app{display:grid;grid-template-columns:minmax(0,420px) 1fr;gap:40px;margin-top:28px;align-items:start;}
+.cyo-tabs{display:flex;gap:10px;margin-bottom:12px;}
+.cyo-tab{flex:1;display:flex;align-items:center;gap:10px;padding:8px 10px;border:1.5px solid var(--line);background:var(--white);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+.cyo-tab[aria-selected="true"]{border-color:var(--ink);}
+.cyo-tab canvas{width:26px;height:39px;background:var(--paper-dim);flex:none;}
+.cyo-canvas-wrap{position:relative;background:var(--paper-dim);border:1px solid var(--line);}
+.cyo-canvas-wrap canvas{width:100%;height:auto;display:block;touch-action:none;cursor:grab;}
+.cyo-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--graphite);pointer-events:none;}
+.cyo-hint{margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--graphite);}
+.cyo-controls{display:grid;gap:22px;}
+.cyo-field .tag{display:flex;justify-content:space-between;margin-bottom:8px;}
+.cyo-field input[type=range]{width:100%;accent-color:var(--blood);}
+.cyo-row{display:flex;gap:10px;flex-wrap:wrap;}
+.cyo-controls .btn{padding:13px 20px;}
+.cyo-controls .btn:disabled{opacity:.4;pointer-events:none;}
+.cyo-check{display:flex;gap:10px;align-items:center;font-size:14px;}
+.cyo-check input{accent-color:var(--blood);width:18px;height:18px;}
+.cyo-warn{color:var(--blood-deep);font-size:13px;min-height:1.2em;}
+@media(max-width:820px){
+  .cyo-app{grid-template-columns:1fr;gap:24px;}
+  .cyo-stage{width:88%;margin:0 auto;}
+}

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Your Own — Coming Soon | OwnIt</title>
-<meta name="description" content="Upload your own artwork and design a custom PS5 skin — the OwnIt design tool is in development. Browse the current collection while you wait.">
+<title>Create Your Own: Design Your PS5 Skin | OwnIt</title>
+<meta name="description" content="Upload your artwork and design a custom PS5 skin, panel by panel, with the OwnIt design tool.">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#F2F1EC">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,20 +57,42 @@
 </nav>
 
 <main>
-  <section class="cs-hero wrap">
-    <span class="eyebrow">In development</span>
-    <h1>Create Your Own<br><span class="accent">Coming Soon.</span></h1>
-    <p class="cs-lead">We're building a tool where you upload your own artwork, position it on a real console template, and preview it before it's ever printed. It isn't live yet — here's what it'll do once it is.</p>
-
-    <div class="cs-steps">
-      <div class="cs-step"><span class="num">01</span><h3>Upload</h3><p>Your artwork, any image file.</p></div>
-      <div class="cs-step"><span class="num">02</span><h3>Design</h3><p>Position and scale it on the console template.</p></div>
-      <div class="cs-step"><span class="num">03</span><h3>Preview</h3><p>See your exact PS5 before ordering.</p></div>
-      <div class="cs-step"><span class="num">04</span><h3>OwnIt</h3><p>We print it and ship it to you.</p></div>
+  <section class="cyo wrap">
+    <div class="cyo-head">
+      <span class="eyebrow">Design tool</span>
+      <h1>Create Your <span class="accent">Own.</span></h1>
+      <p class="cyo-lead">Upload your artwork, position it on each panel, and preview it before it's ever printed.</p>
     </div>
-
-    <div class="cs-cta">
-      <a href="/#collection" class="btn btn-primary">Browse The Collection Instead →</a>
+    <div class="cyo-app">
+      <div class="cyo-stage">
+        <div class="cyo-tabs" id="cyoTabs" role="tablist" aria-label="Console panels"></div>
+        <div class="cyo-canvas-wrap">
+          <canvas id="cyoCanvas" width="1024" height="1536" aria-label="Skin panel editor"></canvas>
+          <div class="cyo-empty" id="cyoEmpty">Upload an image to begin</div>
+        </div>
+        <p class="cyo-hint">Drag to move · Pinch to zoom and rotate</p>
+      </div>
+      <div class="cyo-controls">
+        <label class="btn btn-primary" style="cursor:pointer;">Upload artwork
+          <input type="file" id="cyoFile" accept="image/*" hidden>
+        </label>
+        <label class="cyo-check"><input type="checkbox" id="cyoAll" checked> Use this image on all panels</label>
+        <div class="cyo-warn" id="cyoWarn" role="status"></div>
+        <div class="cyo-field">
+          <span class="tag">Zoom</span>
+          <input type="range" id="cyoZoom" min="20" max="400" value="100" disabled aria-label="Zoom">
+        </div>
+        <div class="cyo-field">
+          <span class="tag">Rotate</span>
+          <input type="range" id="cyoRot" min="-180" max="180" value="0" disabled aria-label="Rotate">
+        </div>
+        <div class="cyo-row">
+          <button type="button" class="btn btn-ghost" data-cyo-act="fit" disabled>Fit</button>
+          <button type="button" class="btn btn-ghost" data-cyo-act="center" disabled>Center</button>
+          <button type="button" class="btn btn-ghost" data-cyo-act="rot90" disabled>Rotate 90°</button>
+        </div>
+        <label class="cyo-check"><input type="checkbox" id="cyoGuides" checked> Show cut line and safe zone</label>
+      </div>
     </div>
   </section>
 </main>
@@ -122,5 +144,6 @@
 
 <script src="/js/cart.js"></script>
 <script src="/js/assistant.js"></script>
+<script src="/create-your-own/editor.js"></script>
 </body>
 </html>
