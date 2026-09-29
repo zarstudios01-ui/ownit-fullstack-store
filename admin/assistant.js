@@ -34,7 +34,7 @@ async function loadSettings() {
         }
     } catch (err) {
         console.error(err);
-        body.innerHTML = '<tr><td colspan="4">Could not load settings.</td></tr>';
+        body.innerHTML = '<tr><td colspan="4">Could not load settings: ' + escapeHTML(err.message) + '</td></tr>';
     }
 }
 
@@ -62,7 +62,7 @@ async function loadConversations() {
             </tr>`).join('');
     } catch (err) {
         console.error(err);
-        body.innerHTML = '<tr><td colspan="4">Could not load conversations.</td></tr>';
+        body.innerHTML = '<tr><td colspan="4">Could not load conversations: ' + escapeHTML(err.message) + '</td></tr>';
     }
 }
 
