@@ -4,10 +4,10 @@
   var CFG = [
     { key: 'left', name: 'Left', kind: 'console', W: 1024, H: 1536,
       cut: '/images/templates/left-cut.png', photo: '/images/photos/console-left.jpg',
-      quad: [[236,236],[748,82],[776,1196],[186,1226]] },
+      quad: [[236,236],[748,82],[772,1355],[181,1338]] },
     { key: 'right', name: 'Right', kind: 'console', W: 1024, H: 1536,
       cut: '/images/templates/right-cut.png', photo: '/images/photos/console-right.jpg',
-      quad: [[290,90],[810,208],[858,1292],[260,1332]] },
+      quad: [[290,90],[810,208],[856,1330],[264,1380]] },
     { key: 'controller', name: 'Controller', kind: 'controller', W: 1536, H: 1024,
       photo: '/images/photos/controller.jpg', mirror: 1530,
       poly: [[352,182],[498,152],[530,156],[546,338],[505,432],[470,505],[430,572],[380,652],[336,732],[292,835],[262,888],[222,884],[182,842],[172,760],[184,600],[232,402],[300,250]] }
