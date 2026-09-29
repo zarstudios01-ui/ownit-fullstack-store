@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OwnIt — Assistant</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">OWNIT<span>.</span></div>
+    <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="orders.html">Orders</a>
+        <a href="customers.html">Customers</a>
+        <a href="products.html">Products</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="assistant.html" class="active">Assistant</a>
+    </nav>
+</div>
+
+<main class="main">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">AI</p>
+            <h1>Assistant</h1>
+        </div>
+        <div class="status"><span></span> Backend connected</div>
+    </header>
+
+    <section class="panel">
+        <div class="panel-header">
+            <p class="eyebrow">KNOWLEDGE</p>
+            <h2>Store Settings</h2>
+        </div>
+        <p style="margin:0 0 12px">The assistant reads these facts live. Changes reach it within about a minute.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Key</th><th>Value</th><th>Updated</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="settingsTable">
+                    <tr><td colspan="4">Loading settings...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="settingsForm" style="margin-top:16px;display:grid;gap:8px;max-width:640px">
+            <input id="skey" placeholder="key (e.g. eid_sale)" maxlength="64" style="padding:10px;font-size:16px;box-sizing:border-box;width:100%">
+            <textarea id="sval" rows="3" placeholder="What should the assistant know?" maxlength="1000" style="padding:10px;font-size:16px;box-sizing:border-box;width:100%"></textarea>
+            <div>
+                <button class="btn-sm" id="saveSetting">Save</button>
+                <button class="btn-sm" id="clearSetting">Clear</button>
+                <span id="settingsMsg" style="margin-left:8px"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <p class="eyebrow">CUSTOMER CHATS</p>
+            <h2>Conversations</h2>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Last active</th><th>First question</th><th>Messages</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="convTable">
+                    <tr><td colspan="4">Loading conversations...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel" id="convDetailPanel" style="display:none">
+        <div class="panel-header">
+            <p class="eyebrow">TRANSCRIPT</p>
+            <h2>Conversation</h2>
+        </div>
+        <div id="convDetail"></div>
+    </section>
+</main>
+
+<script src="auth.js"></script>
+<script src="assistant.js"></script>
+</body>
+</html>
