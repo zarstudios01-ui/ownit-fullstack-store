@@ -3,7 +3,7 @@ const esc = v => String(v == null ? '' : v)
 
 async function notifyNewOrder(order) {
   try {
-    if (!process.env.RESEND_API_KEY || !process.env.ADMIN_EMAIL) return;
+    if (!process.env.RESEND_API_KEY || !process.env.ADMIN_EMAIL) { console.error("Notify skipped: RESEND_API_KEY or ADMIN_EMAIL missing"); return; }
     const link = (process.env.SITE_URL || '') + '/admin/orders.html';
     const id = '#OWNIT-' + String(order.id).padStart(6, '0');
     const items = (order.items || []).map(i =>

@@ -21,6 +21,8 @@ module.exports = async (req, res) => {
   const subtotal = Number(d.subtotal) || 0;
   const ship = Number(d.shipping_cost) || 0;
   const total = d.total != null ? Number(d.total) : subtotal + ship;
+  const validItems = d.items.filter((it) => it && it.id && it.name && it.price != null);
+  if (!validItems.length) return res.status(400).json({ error: 'No valid items in order' });
 
   const conn = await getPool().getConnection();
   try {
