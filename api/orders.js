@@ -2,6 +2,7 @@ const { getPool, cors } = require('./_db');
 const { requireAdmin, requireAnyRole } = require('./_auth');
 
 const ALLOWED = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+const mask = (v, n) => { const s = String(v || ''); return s ? s.slice(0, n) + '***' : ''; };
 
 module.exports = async (req, res) => {
   cors(res);
@@ -28,7 +29,8 @@ module.exports = async (req, res) => {
   }
 
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-  if (!requireAnyRole(req, res)) return;
+  const role = requireAnyRole(req, res);
+  if (!role) return;
   try {
     const pool = getPool();
     const [orders] = await pool.query([
@@ -45,7 +47,8 @@ module.exports = async (req, res) => {
       );
       orders.forEach(o => { o.items = items.filter(i => i.order_id === o.id); });
     }
-    res.status(200).json({ success: true, orders });
+    const out = role === 'viewer' ? orders.map(o => ({ ...o, customer_name: mask(o.customer_name, 1), email: mask(o.email, 2), phone: null, shipping_address: null })) : orders;
+    res.status(200).json({ success: true, orders: out });
   } catch (e) {
     console.error('Orders API failed:', e.message);
     res.status(500).json({ error: 'Could not load orders.' });

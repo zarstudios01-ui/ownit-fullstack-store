@@ -78,12 +78,12 @@ function showOrder(id) {
                 <p class="eyebrow">CUSTOMER</p>
                 <strong>${escapeHTML(order.customer_name || 'Unknown')}</strong>
                 <p>${escapeHTML(order.email || '')}</p>
-                <p>${escapeHTML(order.phone || '')}</p>
+                <p>${order.phone ? escapeHTML(order.phone) : 'Hidden, admin key required'}</p>
             </div>
 
             <div>
                 <p class="eyebrow">SHIPPING ADDRESS</p>
-                <p>${escapeHTML(order.shipping_address || 'No address provided')}</p>
+                <p>${order.shipping_address ? escapeHTML(order.shipping_address) : (isAdmin() ? 'No address provided' : 'Hidden, admin key required')}</p>
             </div>
 
             <div>
