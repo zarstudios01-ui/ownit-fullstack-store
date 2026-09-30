@@ -53,7 +53,21 @@ function isAdmin() {
 
 function applyRoleUI() {
   if (!isAdmin()) {
+    showViewerNotice();
     document.querySelectorAll('.edit-btn, .delete-btn, .add-product-btn, .status-btn, .upload-image-btn, #addProductBtn')
       .forEach(el => { el.style.display = 'none'; });
   }
+}
+
+function showViewerNotice() {
+  if (isAdmin() || document.getElementById('viewerNotice')) return;
+  const isProducts = location.pathname.includes('products');
+  const msg = isProducts
+    ? 'Admin key required to access product details and CMS.'
+    : 'Admin key required for full access.';
+  const n = document.createElement('p');
+  n.id = 'viewerNotice';
+  n.textContent = msg;
+  n.style.cssText = 'margin:16px 0;padding:10px 14px;font-size:12px;color:#666;background:#fff;border:1px solid #e5e5e0;border-radius:8px';
+  (document.querySelector('main') || document.body).appendChild(n);
 }
