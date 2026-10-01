@@ -27,6 +27,7 @@
       .then(function (o) {
         if (!o.ok) throw new Error(o.j.error || 'Save failed');
         try { localStorage.setItem('cyoDesignId', o.j.design_id); } catch (e) {}
+        document.dispatchEvent(new CustomEvent('cyo:saved', { detail: o.j.design_id }));
         say('Design saved. ID: ' + o.j.design_id);
       })
       .catch(function (e) { say('Could not save: ' + e.message); })

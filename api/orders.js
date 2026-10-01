@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
     ].join(' '));
     if (orders.length) {
       const [items] = await pool.query(
-        'SELECT order_id, product_id, product_name, variant, price, quantity FROM order_items WHERE order_id IN (?) ORDER BY id ASC',
+        'SELECT * FROM order_items WHERE order_id IN (?) ORDER BY id ASC',
         [orders.map(o => o.id)]
       );
       orders.forEach(o => { o.items = items.filter(i => i.order_id === o.id); });

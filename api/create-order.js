@@ -41,9 +41,10 @@ module.exports = async (req, res) => {
     );
     for (const it of d.items) {
       if (!it.id || !it.name || it.price == null) continue;
+      const did = /^[a-f0-9]{24}$/.test(String(it.design_id || '')) ? it.design_id : null;
       await conn.execute(
-        'INSERT INTO order_items (order_id, product_id, product_name, variant, price, quantity) VALUES (?,?,?,?,?,?)',
-        [o.insertId, String(it.id), String(it.name), String(it.variant || ''), Number(it.price), parseInt(it.qty) || 1]
+        did ? 'INSERT INTO order_items (order_id, product_id, product_name, variant, price, quantity, design_id) VALUES (?,?,?,?,?,?,?)' : 'INSERT INTO order_items (order_id, product_id, product_name, variant, price, quantity) VALUES (?,?,?,?,?,?)',
+        did ? [o.insertId, String(it.id), String(it.name), String(it.variant || ''), Number(it.price), parseInt(it.qty) || 1, did] : [o.insertId, String(it.id), String(it.name), String(it.variant || ''), Number(it.price), parseInt(it.qty) || 1]
       );
     }
     await conn.commit();

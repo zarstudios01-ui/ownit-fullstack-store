@@ -106,6 +106,7 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
       id: item.id,
       name: item.name,
       variant: item.variant || '',
+      design_id: item.design_id || null,
       price: Number(item.price),
       qty: Number(item.qty)
     })),

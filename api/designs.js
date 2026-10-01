@@ -5,6 +5,7 @@ async function init(db) {
   if (ready) return;
   await db.execute("CREATE TABLE IF NOT EXISTS designs (id VARCHAR(32) PRIMARY KEY, status VARCHAR(20) DEFAULT 'confirmed', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
   await db.execute("CREATE TABLE IF NOT EXISTS design_panels (id INT AUTO_INCREMENT PRIMARY KEY, design_id VARCHAR(32) NOT NULL, panel_key VARCHAR(20) NOT NULL, kind VARCHAR(20), transform_json TEXT, image MEDIUMTEXT NOT NULL, INDEX(design_id))");
+  try { await db.execute("ALTER TABLE order_items ADD COLUMN design_id VARCHAR(32) NULL"); } catch (e) { if (!/duplicate/i.test(e.message)) throw e; }
   ready = true;
 }
 module.exports = async (req, res) => {
