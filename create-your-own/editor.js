@@ -21,7 +21,7 @@
       });
     } catch (e) {}
   }
-  var P = CFG;
+  var P = CFG; window.cyoPanels = P;
   var $ = function (id) { return document.getElementById(id); };
   var canvas = $('cyoCanvas');
   if (!canvas) return;

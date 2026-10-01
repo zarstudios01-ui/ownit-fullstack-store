@@ -92,6 +92,8 @@
           <button type="button" class="btn btn-ghost" data-cyo-act="rot90" disabled>Rotate 90°</button>
         </div>
         <label class="cyo-check"><input type="checkbox" id="cyoGuides" checked> Show cut line and safe zone</label>
+        <button type="button" class="btn btn-primary" id="cyoConfirm">Confirm design</button>
+        <div class="cyo-warn" id="cyoConfirmMsg" role="status"></div>
       </div>
     </div>
   </section>
@@ -145,5 +147,6 @@
 <script src="/js/cart.js"></script>
 <script src="/js/assistant.js"></script>
 <script src="/create-your-own/editor.js"></script>
+<script src="/create-your-own/confirm.js" defer></script>
 </body>
 </html>
