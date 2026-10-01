@@ -105,6 +105,7 @@ function showOrder(id) {
                     <div>
                         <strong>${escapeHTML(item.product_name)}</strong>
                         <p>${escapeHTML(item.variant || '')}</p>
+                        ${item.design_id ? `<div style="display:flex;gap:6px;margin-top:6px">${["left","right","controller"].map(k => `<a href="/api/designs?id=${escapeHTML(item.design_id)}&panel=${k}" target="_blank" rel="noopener"><img src="/api/designs?id=${escapeHTML(item.design_id)}&panel=${k}" alt="${k} artwork" style="width:56px;height:84px;object-fit:contain;background:#eee;border:1px solid #ccc" onerror="this.parentNode.remove()"></a>`).join("")}</div>` : ""}
                     </div>
 
                     <div>
