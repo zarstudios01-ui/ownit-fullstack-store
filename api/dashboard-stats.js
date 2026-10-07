@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     ]);
 
     const recentOutput = role === 'viewer'
-      ? recent.map(r => ({ ...r, customer_name: mask(r.customer_name, 1), email: mask(r.email, 2) }))
+      ? recent.map(r => ({ ...r, customer_name: mask(r.customer_name, 1), email: mask(r.email, 2), total: null }))
       : recent;
 
     res.status(200).json({
@@ -30,15 +30,15 @@ module.exports = async (req, res) => {
       role,
       stats: {
         total_orders: Number(s.total_orders),
-        total_revenue: Number(s.total_revenue),
+        total_revenue: role === 'viewer' ? null : Number(s.total_revenue),
         total_customers: Number(cu.total_customers),
-        average_order_value: Number(s.average_order_value),
+        average_order_value: role === 'viewer' ? null : Number(s.average_order_value),
         pending_orders: Number(s.pending_orders || 0),
         completed_orders: Number(s.completed_orders || 0),
         cancelled_orders: Number(s.cancelled_orders || 0)
       },
       recent_orders: recentOutput,
-      top_products: top
+      top_products: role === 'viewer' ? top.map(p => ({ ...p, revenue: null })) : top
     });
   } catch (e) {
     console.error('Dashboard stats failed:', e.message);

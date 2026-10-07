@@ -1,6 +1,7 @@
 const API_URL = '/api/dashboard-stats';
 
 function formatMoney(value) {
+    if (value === null || value === undefined) return 'Admin only';
     return 'Rs. ' + Number(value).toLocaleString('en-PK');
 }
 
