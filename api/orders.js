@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
       );
       orders.forEach(o => { o.items = items.filter(i => i.order_id === o.id); });
     }
-    const out = role === 'viewer' ? orders.map(o => ({ ...o, customer_name: mask(o.customer_name, 1), email: mask(o.email, 2), phone: null, shipping_address: null })) : orders;
+    const out = role === 'viewer' ? orders.map(o => ({ ...o, customer_name: mask(o.customer_name, 1), email: mask(o.email, 2), phone: null, shipping_address: null, subtotal: null, shipping_cost: null, total: null, items: (o.items || []).map(i => ({ ...i, price: null })) })) : orders;
     res.status(200).json({ success: true, orders: out });
   } catch (e) {
     console.error('Orders API failed:', e.message);

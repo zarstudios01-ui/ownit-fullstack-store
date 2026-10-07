@@ -34,6 +34,7 @@ async function loadCustomers() {
 }
 
 function formatMoney(value) {
+    if (value === null || value === undefined) return 'Admin only';
     return 'Rs. ' + Number(value).toLocaleString('en-PK');
 }
 

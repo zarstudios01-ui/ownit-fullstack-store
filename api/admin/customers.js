@@ -31,6 +31,7 @@ module.exports = async (req, res) => {
           name: mask(r.name, 1),
           email: mask(r.email, 2),
           phone: mask(r.phone, 3),
+          total_spent: null,
         }))
       : rows;
 
